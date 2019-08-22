@@ -7,13 +7,16 @@ import Button from './components/Button/Button';
 import produce from 'immer/dist/immer';
 import WebServices from './WebServices/WebServices';
 import axios from "axios";
+import Popup from "reactjs-popup";
+
 
 //function App() {
-  class App extends React.PureComponent {
+class App extends React.PureComponent {
   state={
     user:{},
     password:{},
-    server:"http://127.0.0.1:8000/api/apiPagos/" 
+    server:"http://127.0.0.1:8000/api/apiPagos/",
+    id_user:0
   };
   onChangeUser = (event) => {
     // console.log(event.target.value);
@@ -30,23 +33,51 @@ import axios from "axios";
     this.setState(nextState);
   }
   onClick= async (event) =>{
-    // console.log(this.state.user);
-    // console.log(this.state.password);
     const myServer=this.state.server+this.state.user+"/"+this.state.password+"/";
-    // const response = await WebServices.getResponse({url:myServer});
-    let res = await axios.get(myServer);
-    console.log(myServer);
-    // console.log(response);
+    const response = await axios.get(myServer);
+    const id = parseInt(response.data,10);
+    if(id !== 0 ){      
+        const nextState = produce(this.state, (draft) =>{
+          draft.id_user = id;
+        })
+        this.setState(nextState);
+        console.log("TCL: App -> onClick -> nextState", nextState);
+    }
+    else{
+      console.log("fallo al loguearse");      
+    }
   }
+
   render(){
+    const {id_user} = this.state;
+    {console.log("TCL: App -> render -> usr_id", id_user)}
+    if (id_user !== 0 )
+      return ( <Redirect to={'/roster'}/> );
+    return(
+      <Switch>
+        <Route exact path='/' render={()=>this.Home()}/>
+        {/* both /roster and /roster/:number begin with /roster */}
+        <Route path='/roster' render={()=>this.roster()}/>
+        {/* <Route path='/schedule' component={Schedule}/> */}
+      </Switch>
+    );
+  }
+  Home = () =>{
     return (
-      <div className = {App-logo}>
-        <Input type={"text"} label={"Usuario"} onChange={this.onChangeUser} />
-        <Input type={"password"} label={"Contraseña"} onChange={this.onChangePassword}/>
-        <Button label={"Ingresar"} onClick={this.onClick}/>
+      <div >
+         <Input type={"text"} label={"Usuario"} onChange={this.onChangeUser} />
+         <Input type={"password"} label={"Contraseña"} onChange={this.onChangePassword}/>
+         <Button label={"Ingresar"} onClick={()=>this.onClick()}/>
       </div>
     );
-  }7
+  }
+  roster = () => {
+    return (
+      <div >
+        <Input type={"text"} label={"Archivo"} onChange={this.onChangeUser} />
+      </div>
+    );
+  }
 }
 
 export default App;
