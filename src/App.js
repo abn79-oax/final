@@ -91,9 +91,8 @@ class App extends React.PureComponent {
   {
     return (
       <div >
-          { this.state.id_user }
-        <Input type={"text"} label={"Usuario"} onChange={this.onChangeUser} value="alvaroburgoa@gmail.co"/>
-        <Input type={"password"} label={"Contraseña"} onChange={this.onChangePassword} value="inicial201" />
+        <Input type={"text"} label={"Usuario"} onChange={this.onChangeUser} />
+        <Input type={"password"} label={"Contraseña"} onChange={this.onChangePassword}  />
         <Button label={"Ingresar"} onClick={() => this.onClick()} />
       </div>
     );
